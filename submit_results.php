@@ -2,49 +2,50 @@
 session_start();
 include 'db.php';
 
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    echo json_encode(['success' => false, 'error' => 'Not logged in']);
+    exit();
+}
+
+if (!isset($_POST['score']) || !isset($_POST['time_taken'])) {
+    echo json_encode(['success' => false, 'error' => 'Missing required data']);
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-$category = $_POST['category'] ?? 'editing';
-$score = $_POST['score'] ?? 0;
-$time_taken = $_POST['time_taken'] ?? 0;
-$remaining_questions = $_POST['remaining_questions'] ?? 0;
-
-// Add penalty time for remaining questions (60 seconds per question)
-$total_time = $time_taken + ($remaining_questions * 60);
+$score = intval($_POST['score']);
+$total_questions = intval($_POST['total_questions']);
+$time_taken = intval($_POST['time_taken']);
+$lives_remaining = intval($_POST['lives_remaining']);
 
 try {
-    // Insert into Leaderboards
-    $stmt = $conn->prepare("INSERT INTO Leaderboards (user_id, category, score, time_taken) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("isii", $user_id, $category, $score, $total_time);
-    $stmt->execute();
-    $stmt->close();
+    $stmt = $conn->prepare("
+        INSERT INTO Results (user_id, score, time_taken, lives_remaining)
+        VALUES (?, ?, ?, ?)
+    ");
 
-    // Get user's best score for this category
-    $stmt = $conn->prepare("SELECT score, time_taken FROM Leaderboards
-                           WHERE user_id = ? AND category = ?
-                           ORDER BY score DESC, time_taken ASC LIMIT 1");
-    $stmt->bind_param("is", $user_id, $category);
-    $stmt->execute();
-    $best_result = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
+    $stmt->bind_param("iiii",
+        $user_id,
+        $score,
+        $time_taken,
+        $lives_remaining
+    );
 
-    $response = [
+    $stmt->execute();
+
+    echo json_encode([
         'success' => true,
-        'score' => $score,
-        'time_taken' => $total_time,
-        'best_score' => $best_result['score'] ?? 0,
-        'best_time' => $best_result['time_taken'] ?? 0
-    ];
+        'message' => 'Results saved successfully'
+    ]);
 } catch (Exception $e) {
-    $response = [
+    echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
-    ];
+        'error' => 'Error saving results: ' . $e->getMessage()
+    ]);
 }
 
-header('Content-Type: application/json');
-echo json_encode($response);
+$stmt->close();
+$conn->close();
+?>
