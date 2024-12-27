@@ -19,18 +19,20 @@ $score = intval($_POST['score']);
 $total_questions = intval($_POST['total_questions']);
 $time_taken = intval($_POST['time_taken']);
 $lives_remaining = intval($_POST['lives_remaining']);
+$test_type = isset($_POST['test_type']) ? $_POST['test_type'] : 'pre'; // Add test_type handling
 
 try {
     $stmt = $conn->prepare("
-        INSERT INTO Results (user_id, score, time_taken, lives_remaining)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO Results (user_id, score, time_taken, lives_remaining, test_type)
+        VALUES (?, ?, ?, ?, ?)
     ");
 
-    $stmt->bind_param("iiii",
+    $stmt->bind_param("iiiis",
         $user_id,
         $score,
         $time_taken,
-        $lives_remaining
+        $lives_remaining,
+        $test_type
     );
 
     $stmt->execute();

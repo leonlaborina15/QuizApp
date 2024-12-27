@@ -11,22 +11,14 @@ session_start();
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
 <div class="text-center">
-    <h1 class="mb-4">Welcome to the Quiz App</h1>
-    <?php if (isset($_SESSION['user_id'])): ?>
-      <div>
-        <form action="pretest.php" method="get" class="mb-3">
-<a href="guide.php" class="btn btn-primary">Take Quiz</a>
-<a href="posttest.php" class="btn btn-primary">Take Post-Test</a>
 
-    
-        </form>
-        <a href="leaderboard.php" class="btn btn-info mb-2">View Leaderboard</a>
-        <a href="logout.php" class="btn btn-danger mb-2">Logout</a>
-      </div>
-    <?php else: ?>
-        <a href="signup.php" class="btn btn-primary mb-2">Signup</a>
-        <a href="login.php" class="btn btn-secondary mb-2">Login</a>
-    <?php endif; ?>
+
+<h1>Hello WOrld</h1>
+<a href="index.php" class="btn btn-primary">Editing</a>
+<a href="posttest.php" class="btn btn-primary">Coding</a>
+
+
+
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

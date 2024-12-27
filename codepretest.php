@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$category = isset($_GET['category']) ? $_GET['category'] : 'editing';
+$category = 'coding'; // Just change this from 'editing' to 'coding'
 
 // Fetch questions
 try {
@@ -26,7 +26,7 @@ if (!isset($_SESSION['lives'])) {
     $_SESSION['lives'] = 3;
 }
 if (!isset($_SESSION['pretest_start'])) {
-    $_SESSION['pretest_start'] = time();
+    $_SESSION['pretest_start'] = time(); // Current time: 2024-12-27 04:16:00
 }
 ?>
 <!DOCTYPE html>

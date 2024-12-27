@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php'; // Database connection file
+include 'db.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -8,40 +8,25 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$category = isset($_GET['category']) ? $_GET['category'] : 'editing'; // Default to 'editing' if not set
+$category = isset($_GET['category']) ? $_GET['category'] : 'editing';
 
-// Fetch 15 questions for post-test (randomized from pre-test)
-$questions = $conn->query("SELECT * FROM Questions WHERE category='$category' ORDER BY RAND() LIMIT 15");
-
-// Handle quiz submission
-if (isset($_POST['submit_posttest'])) {
-    $score = 0;
-    $time_taken = $_POST['time_taken']; // Time taken to complete the quiz
-
-    foreach ($_POST['answers'] as $question_id => $user_answer) {
-        $stmt = $conn->prepare("SELECT correct_answer FROM Questions WHERE question_id = ?");
-        $stmt->bind_param("i", $question_id);
-        $stmt->execute();
-        $stmt->bind_result($correct_answer);
-        $stmt->fetch();
-        $stmt->close();
-
-        $is_correct = ($user_answer == $correct_answer) ? 1 : 0;
-        $score += $is_correct;
-
-        $stmt = $conn->prepare("INSERT INTO UserAnswers (user_id, question_id, user_answer, is_correct) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iisi", $user_id, $question_id, $user_answer, $is_correct);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    // Update leaderboard
-    $stmt = $conn->prepare("INSERT INTO Leaderboards (user_id, score, category, time_taken) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("iisi", $user_id, $score, $category, $time_taken);
+// Fetch questions
+try {
+    $stmt = $conn->prepare("SELECT * FROM Questions WHERE category = ? ORDER BY RAND() LIMIT 15");
+    $stmt->bind_param("s", $category);
     $stmt->execute();
+    $result = $stmt->get_result();
+    $questions = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
+} catch(Exception $e) {
+    die("Error fetching questions: " . $e->getMessage());
+}
 
-    header("Location: leaderboard.php?category=<?php echo $category; ?>");
+if (!isset($_SESSION['lives'])) {
+    $_SESSION['lives'] = 3;
+}
+if (!isset($_SESSION['posttest_start'])) {
+    $_SESSION['posttest_start'] = time();
 }
 ?>
 <!DOCTYPE html>
@@ -51,38 +36,413 @@ if (isset($_POST['submit_posttest'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post-test</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .question-modal {
+            display: none;
+        }
+        .question-modal.active {
+            display: block;
+        }
+        .form-check {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .form-check:hover {
+            background-color: #f8f9fa;
+        }
+        .form-check-input {
+            margin-top: 3px;
+        }
+        .form-check-label {
+            width: 100%;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-navigation {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .progress-info {
+            margin-bottom: 20px;
+        }
+        .correct-answer {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .wrong-answer {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .score-summary {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
     <h1 class="mt-5">Post-test</h1>
-    <form method="post" action="posttest.php?category=<?php echo $category; ?>" class="mt-3">
-        <?php while ($question = $questions->fetch_assoc()): ?>
-            <div class="mb-3">
-                <p><?php echo $question['question_text']; ?></p>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answers[<?php echo $question['question_id']; ?>]" value="A" required>
-                    <label class="form-check-label">A</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answers[<?php echo $question['question_id']; ?>]" value="B" required>
-                    <label class="form-check-label">B</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answers[<?php echo $question['question_id']; ?>]" value="C" required>
-                    <label class="form-check-label">C</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answers[<?php echo $question['question_id']; ?>]" value="D" required>
-                    <label class="form-check-label">D</label>
+    <div class="alert alert-info progress-info">
+        <p>Lives: <span id="lives"><?php echo $_SESSION['lives']; ?></span></p>
+        <p>Time remaining: <span id="time">60</span> seconds</p>
+    </div>
+
+    <div id="quiz-container">
+        <?php foreach ($questions as $index => $question): ?>
+            <div id="question-<?php echo $index; ?>" class="question-modal <?php echo $index === 0 ? 'active' : ''; ?>">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Question <?php echo $index + 1; ?> of <?php echo count($questions); ?></h5>
+                        <p class="card-text"><?php echo $question['question_text']; ?></p>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                   name="question<?php echo $index; ?>"
+                                   id="choice_a_<?php echo $index; ?>"
+                                   value="A">
+                            <label class="form-check-label" for="choice_a_<?php echo $index; ?>">
+                                <?php echo $question['choice_a']; ?>
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                   name="question<?php echo $index; ?>"
+                                   id="choice_b_<?php echo $index; ?>"
+                                   value="B">
+                            <label class="form-check-label" for="choice_b_<?php echo $index; ?>">
+                                <?php echo $question['choice_b']; ?>
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                   name="question<?php echo $index; ?>"
+                                   id="choice_c_<?php echo $index; ?>"
+                                   value="C">
+                            <label class="form-check-label" for="choice_c_<?php echo $index; ?>">
+                                <?php echo $question['choice_c']; ?>
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                   name="question<?php echo $index; ?>"
+                                   id="choice_d_<?php echo $index; ?>"
+                                   value="D">
+                            <label class="form-check-label" for="choice_d_<?php echo $index; ?>">
+                                <?php echo $question['choice_d']; ?>
+                            </label>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary next-btn"
+                                    data-question="<?php echo $question['question_id']; ?>"
+                                    data-index="<?php echo $index; ?>">
+                                <?php echo $index < count($questions) - 1 ? 'Next' : 'Finish'; ?>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        <?php endwhile; ?>
-        <input type="hidden" name="time_taken" value="/* JavaScript to calculate time here */">
-        <button type="submit" name="submit_posttest" class="btn btn-success">Submit Post-test</button>
-    </form>
+        <?php endforeach; ?>
+    </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quiz Complete!</h5>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h3>Your Score: <span id="finalScore">0</span></h3>
+                    <p>Lives Remaining: <span id="finalLives">0</span></p>
+                    <p>Time Taken: <span id="timeTaken">0</span> seconds</p>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary btn-navigation" onclick="showResults()">View Results</button>
+                    <a href="leaderboard.php" class="btn btn-info btn-navigation">Leaderboards</a>
+                    <a href="index.php" class="btn btn-secondary btn-navigation">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detailed Results</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="score-summary mb-4">
+                    <h4>Score Summary</h4>
+                    <p>Total Score: <span id="resultsTotalScore">0</span></p>
+                    <p>Time Taken: <span id="resultsTotalTime">0</span> seconds</p>
+                    <p>Lives Remaining: <span id="resultsLivesLeft">0</span></p>
+                </div>
+                <div id="detailedResults">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Back to Summary</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+$(document).ready(function() {
+    let currentQuestion = 0;
+    let timer;
+    let lives = <?php echo $_SESSION['lives']; ?>;
+    let quizResults = [];
+    let startTime = new Date();
+
+    function resetTimer() {
+        clearInterval(timer);
+        let timeRemaining = 60;
+        $('#time').text(timeRemaining);
+
+        timer = setInterval(() => {
+            timeRemaining--;
+            $('#time').text(timeRemaining);
+
+            if (timeRemaining <= 0) {
+                clearInterval(timer);
+                handleTimeUp();
+            }
+        }, 1000);
+    }
+
+    function handleTimeUp() {
+        lives--;
+        $('#lives').text(lives);
+
+        if (lives <= 0) {
+            showGameOver();
+            return;
+        }
+        moveToNextQuestion();
+    }
+
+    function moveToNextQuestion() {
+        $('.question-modal').removeClass('active');
+        currentQuestion++;
+
+        if (currentQuestion < <?php echo count($questions); ?>) {
+            $(`#question-${currentQuestion}`).addClass('active');
+            resetTimer();
+        } else {
+            showGameOver();
+        }
+    }
+
+    function submitResults(callback) {
+        const correctAnswers = quizResults.filter(result => result.is_correct).length;
+        const timeTaken = Math.floor((new Date() - startTime) / 1000);
+        const remainingQuestions = <?php echo count($questions); ?> - currentQuestion;
+        const totalTime = timeTaken + (remainingQuestions * 60);
+
+        $.ajax({
+            type: 'POST',
+            url: 'submit_results.php',
+            data: {
+                score: correctAnswers,
+                total_questions: quizResults.length,
+                time_taken: totalTime,
+                lives_remaining: lives,
+                 test_type: 'post' ,
+                category: '<?php echo $category; ?>'
+            },
+            success: function(response) {
+                if (callback) callback();
+            },
+            error: function() {
+                console.error('Error submitting results');
+                if (callback) callback();
+            }
+        });
+    }
+
+    function showGameOver() {
+        clearInterval(timer);
+        const timeTaken = Math.floor((new Date() - startTime) / 1000);
+        const remainingQuestions = <?php echo count($questions); ?> - currentQuestion;
+        const totalTime = timeTaken + (remainingQuestions * 60);
+        const correctAnswers = quizResults.filter(result => result.is_correct).length;
+
+        $('#finalScore').text(correctAnswers + ' / ' + quizResults.length);
+        $('#finalLives').text(lives);
+        $('#timeTaken').text(totalTime);
+
+        submitResults(function() {
+            $('#gameOverModal').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+        });
+    }
+
+    function showResults() {
+        $('#resultsTotalScore').text($('#finalScore').text());
+        $('#resultsTotalTime').text($('#timeTaken').text());
+        $('#resultsLivesLeft').text($('#finalLives').text());
+
+        let resultsHtml = '';
+        quizResults.forEach((result, index) => {
+            resultsHtml += `
+                <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
+                    <h5>Question ${index + 1}</h5>
+                    <p><strong>Question:</strong> ${result.question_text}</p>
+                    <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
+                    ${!result.is_correct ?
+                        `<p><strong>Correct Answer:</strong> ${result.correct_answer_text}</p>`
+                        : ''}
+                </div>
+            `;
+        });
+
+        $('#detailedResults').html(resultsHtml);
+        $('#gameOverModal').modal('hide');
+        $('#resultsModal').modal('show');
+    }
+
+    resetTimer();
+
+    $('.form-check').click(function() {
+        $(this).find('input[type="radio"]').prop('checked', true);
+    });
+
+    $('#resultsModal').on('hidden.bs.modal', function () {
+        $('#gameOverModal').modal('show');
+    });
+
+    $(document).on('click', '[onclick="showResults()"]', function() {
+        showResults();
+    });
+
+    $('.next-btn').click(function() {
+        console.log('Next button clicked'); // Debug log
+        const questionId = $(this).data('question');
+        const index = $(this).data('index');
+        const selectedAnswer = $(`input[name="question${index}"]:checked`).val();
+
+        if (!selectedAnswer) {
+            alert('Please select an answer before proceeding.');
+            return;
+        }
+
+        // Show loading state
+        $(this).prop('disabled', true).text('Checking...');
+        const $btn = $(this);
+
+        $.ajax({
+            type: 'POST',
+            url: 'check_answer.php',
+            data: {
+                question_id: questionId,
+                user_answer: selectedAnswer
+            },
+            success: function(response) {
+                try {
+                    console.log('Response:', response); // Debug log
+                    const result = JSON.parse(response);
+                    const currentQuestion = $(`#question-${index}`);
+
+                    quizResults.push({
+                        question_text: currentQuestion.find('.card-text').text(),
+                        user_answer: selectedAnswer,
+                        user_answer_text: currentQuestion.find(`label[for="choice_${selectedAnswer.toLowerCase()}_${index}"]`).text().trim(),
+                        correct_answer: result.correct_answer,
+                        correct_answer_text: currentQuestion.find(`label[for="choice_${result.correct_answer.toLowerCase()}_${index}"]`).text().trim(),
+                        is_correct: result.is_correct
+                    });
+
+                    if (!result.is_correct) {
+                        lives--;
+                        $('#lives').text(lives);
+
+                        if (lives <= 0) {
+                            showGameOver();
+                            return;
+                        }
+                    }
+                    moveToNextQuestion();
+                } catch (e) {
+                    console.error('Error parsing response:', e, response);
+                    alert('Error checking answer. Please try again.');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Ajax error:', error);
+                alert('Error checking answer. Please try again.');
+            },
+            complete: function() {
+                // Reset button state
+                $btn.prop('disabled', false).text('Next');
+            }
+        });
+    });
+});
+
+window.showResults = function() {
+    $('#resultsTotalScore').text($('#finalScore').text());
+    $('#resultsTotalTime').text($('#timeTaken').text());
+    $('#resultsLivesLeft').text($('#finalLives').text());
+
+    let resultsHtml = '';
+    quizResults.forEach((result, index) => {
+        resultsHtml += `
+            <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
+                <h5>Question ${index + 1}</h5>
+                <p><strong>Question:</strong> ${result.question_text}</p>
+                <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
+                ${!result.is_correct ?
+                    `<p><strong>Correct Answer:</strong> ${result.correct_answer_text}</p>`
+                    : ''}
+            </div>
+        `;
+    });
+
+    $('#detailedResults').html(resultsHtml);
+    $('#gameOverModal').modal('hide');
+    $('#resultsModal').modal('show');
+};
+</script>
+
 </body>
 </html>
