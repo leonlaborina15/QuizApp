@@ -1,0 +1,34 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: "Montserrat", serif;
+	background-color: #0174be !important;
+}
+
+h1 {
+	font-size: 24px;
+	text-align: center;
+	margin-top: 20px;
+}
+
+form,
+.btn-group {
+	text-align: center;
+	margin: 20px 0;
+}
+
+form button,
+.btn-group a {
+	padding: 10px 20px;
+	text-decoration: none;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.table {
+	width: 80%;
+	margin: 20px auto;
+}
