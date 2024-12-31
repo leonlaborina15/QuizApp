@@ -16,9 +16,8 @@ session_start();
       <div>
         <form action="pretest.php" method="get" class="mb-3">
 <a href="guide.php" class="btn btn-primary">Take Quiz</a>
-<a href="posttest.php" class="btn btn-primary">Take Post-Test</a>
 
-    
+
         </form>
         <a href="leaderboard.php" class="btn btn-info mb-2">View Leaderboard</a>
         <a href="logout.php" class="btn btn-danger mb-2">Logout</a>

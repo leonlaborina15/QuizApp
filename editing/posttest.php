@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$category = 'coding'; // Just change this from 'editing' to 'coding'
+$category = isset($_GET['category']) ? $_GET['category'] : 'editing';
 
 // Fetch questions
 try {
@@ -25,8 +25,8 @@ try {
 if (!isset($_SESSION['lives'])) {
     $_SESSION['lives'] = 3;
 }
-if (!isset($_SESSION['pretest_start'])) {
-    $_SESSION['pretest_start'] = time(); // Current time: 2024-12-27 04:16:00
+if (!isset($_SESSION['posttest_start'])) {
+    $_SESSION['posttest_start'] = time();
 }
 ?>
 <!DOCTYPE html>
@@ -34,7 +34,7 @@ if (!isset($_SESSION['pretest_start'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pre-test</title>
+    <title>Post-test</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .question-modal {
@@ -101,7 +101,7 @@ if (!isset($_SESSION['pretest_start'])) {
 </head>
 <body>
 <div class="container">
-    <h1 class="mt-5">Pre-test</h1>
+    <h1 class="mt-5">Post-test</h1>
     <div class="alert alert-info progress-info">
         <p>Lives: <span id="lives"><?php echo $_SESSION['lives']; ?></span></p>
         <p>Time remaining: <span id="time">60</span> seconds</p>
@@ -169,7 +169,6 @@ if (!isset($_SESSION['pretest_start'])) {
     </div>
 </div>
 
-<!-- Game Over Modal -->
 <div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -182,11 +181,11 @@ if (!isset($_SESSION['pretest_start'])) {
                     <p>Lives Remaining: <span id="finalLives">0</span></p>
                     <p>Time Taken: <span id="timeTaken">0</span> seconds</p>
                 </div>
-               <div class="text-center">
-    <button type="button" class="btn btn-primary btn-navigation" onclick="showResults()">View Results</button>
-    <a href="phase2.php" class="btn btn-success btn-navigation">Proceed to Phase Two</a>
-    <a href="index.php" class="btn btn-secondary btn-navigation">Back to Home</a>
-</div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary btn-navigation" onclick="showResults()">View Results</button>
+                    <a href="leaderboard.php" class="btn btn-info btn-navigation">Leaderboards</a>
+                    <a href="index.php" class="btn btn-secondary btn-navigation">Back to Home</a>
+                </div>
             </div>
         </div>
     </div>
@@ -286,7 +285,7 @@ $(document).ready(function() {
                 total_questions: quizResults.length,
                 time_taken: totalTime,
                 lives_remaining: lives,
-                 test_type: 'pre' ,
+                 test_type: 'post' ,
                 category: '<?php echo $category; ?>'
             },
             success: function(response) {
@@ -380,7 +379,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 try {
-                    console.log('Response:', response); // Debug log
+                    console.log('Response:', response);
                     const result = JSON.parse(response);
                     const currentQuestion = $(`#question-${index}`);
 
@@ -413,7 +412,6 @@ $(document).ready(function() {
                 alert('Error checking answer. Please try again.');
             },
             complete: function() {
-                // Reset button state
                 $btn.prop('disabled', false).text('Next');
             }
         });
