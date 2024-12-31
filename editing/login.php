@@ -14,22 +14,33 @@ unset($_SESSION['error']); // Clear error after displaying
 <body class="d-flex justify-content-center align-items-center vh-100">
 <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
     <h3 class="text-center mb-4">Login</h3>
-
     <?php if ($error): ?>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <?= htmlspecialchars($error); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <?php endif; ?>
-
     <form action="auth.php" method="post">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+            <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+                value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required>
         </div>
         <button type="submit" name="login" class="btn btn-primary btn-block">Login</button>
         <a href="signup.php" class="btn btn-link d-block text-center mt-2">Don't have an account? Signup here</a>
