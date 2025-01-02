@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php';   
+include 'db.php';
 
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
@@ -28,7 +28,7 @@ if (isset($_POST['login'])) {
 
     if (password_verify($password, $hash)) {
         $_SESSION['user_id'] = $user_id;
-        header("Location: index.php");
+        header("Location: home.php");
         exit();
     } else {
         $_SESSION['error'] = "Invalid email or password.";

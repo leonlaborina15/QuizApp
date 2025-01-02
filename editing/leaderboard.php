@@ -124,8 +124,8 @@ $stmt->close();
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1 class="text-light fs-1">Leaderboard</h1>
+    <div class="container mt-4">
+        <h1 class="main_title">Leaderboard</h1>
 
         <ul class="nav nav-pills mb-4">
             <li class="nav-item dropdown me-2">
@@ -143,12 +143,12 @@ $stmt->close();
                 </div>
             </li>
             <li class="nav-item ">
-                <a class="nav-link <?php echo $sort_by == 'time' ? 'active bg-warning text-dark' : 'text-light'; ?>"
+                <a class="nav-link <?php echo $sort_by == 'time' ? 'active bg-primary text-light' : 'text-light'; ?>"
                     href="?sort_by=time&test_type=<?php echo $test_type; ?>">By
                     Time</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?php echo $sort_by == 'score' ? 'active bg-warning text-dark' : 'text-light'; ?>"
+                <a class="nav-link <?php echo $sort_by == 'score' ? 'active bg-primary text-light' : 'text-light'; ?>"
                     href="?sort_by=score&test_type=<?php echo $test_type; ?>">By
                     Score</a>
             </li>
@@ -237,7 +237,19 @@ $stmt->close();
             <tbody>
                 <?php foreach ($leaderboard as $index => $entry): ?>
                     <tr class="<?php echo strpos($entry['username'], $current_username) !== false ? 'current-user' : ''; ?>">
-                        <td><?php echo $index + 1; ?></td>
+                        <td>
+                            <?php
+                            $rank = $index + 1;
+                            if ($rank == 1) {
+                                echo "🥇";
+                            } elseif ($rank == 2) {
+                                echo "🥈";
+                            } elseif ($rank == 3) {
+                                echo "🥉";
+                            }
+                            echo $rank;
+                            ?>
+                        </td>
                         <td><?php echo htmlspecialchars($entry['username'] . $entry['is_current_user']); ?></td>
                         <td><?php echo $entry['score']; ?></td>
                         <td><?php echo $entry['time_taken']; ?> seconds</td>
@@ -261,6 +273,7 @@ $stmt->close();
         const { animate } = Motion;
 
         animate(document.body, { opacity: [0, 1] }, { duration: 0.5 });
+        animate(".main_title", { opacity: [0, 1], x: ["-5%", "0"] }, { duration: 0.5 });
     </script>
     <script>
         $(document).ready(function () {

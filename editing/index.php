@@ -14,7 +14,7 @@ session_start();
 
 <body class="d-flex justify-content-center align-items-center vh-100" id="page-body">
   <div class="text-center text-light">
-    <h1 class="mb-4 fs-1">Welcome to the Quiz App</h1>
+    <h1 class="main_title">Welcome to the Quiz App</h1>
     <?php if (isset($_SESSION['user_id'])): ?>
       <form action="pretest.php" method="get" class="mb-3">
         <a href="guide.php" class="btn btn-warning">Take Quiz</a>
@@ -34,6 +34,7 @@ session_start();
     const { animate } = Motion;
 
     animate(document.body, { opacity: [0, 1] }, { duration: 0.5 });
+    animate(".main_title", { opacity: [0, 1], y: ["10%", "0"] }, { duration: 0.5 });
   </script>
 </body>
 

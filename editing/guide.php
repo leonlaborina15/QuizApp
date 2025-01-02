@@ -65,7 +65,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <body>
     <div class="main-container">
-        <h1 class="main-title text-light display-4 text-center">Adobe Photoshop Tools Guide</h1>
+        <h1 class="main_title text-center">Adobe Photoshop Tools Guide</h1>
 
         <!-- Introduction Section -->
         <div class="guide-section">
