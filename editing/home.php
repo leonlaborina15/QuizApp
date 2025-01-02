@@ -12,7 +12,7 @@ session_start();
     <meta name="keywords" content="CODEMORA, coding, editing, quizzes, skills, practice">
     <meta name="author" content="CODEMORA Team">
     <link href="./css/home.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100">

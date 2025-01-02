@@ -9,21 +9,18 @@ session_start();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz App</title>
   <link href="./css/global.css" rel="stylesheet">
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="d-flex justify-content-center align-items-center vh-100">
-  <div class="text-center">
-    <h1 class="mb-4">Welcome to the Quiz App</h1>
+<body class="d-flex justify-content-center align-items-center vh-100" id="page-body">
+  <div class="text-center text-light">
+    <h1 class="mb-4 fs-1">Welcome to the Quiz App</h1>
     <?php if (isset($_SESSION['user_id'])): ?>
-      <div>
-        <form action="pretest.php" method="get" class="mb-3">
-          <a href="guide.php" class="btn btn-primary">Take Quiz</a>
-
-        </form>
-        <a href="leaderboard.php" class="btn btn-info mb-2">View Leaderboard</a>
-        <a href="logout.php" class="btn btn-danger mb-2">Logout</a>
-      </div>
+      <form action="pretest.php" method="get" class="mb-3">
+        <a href="guide.php" class="btn btn-warning">Take Quiz</a>
+        <a href="leaderboard.php" class="btn btn-info">View Leaderboard</a>
+        <a href="logout.php" class="btn btn-danger">Logout</a>
+      </form>
     <?php else: ?>
       <a href="signup.php" class="btn btn-primary mb-2">Signup</a>
       <a href="login.php" class="btn btn-secondary mb-2">Login</a>
@@ -32,6 +29,12 @@ session_start();
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
+  <script>
+    const { animate } = Motion;
+
+    animate(document.body, { opacity: [0, 1] }, { duration: 0.5 });
+  </script>
 </body>
 
 </html>
