@@ -8,7 +8,7 @@ unset($_SESSION['error']); // Clear error after displaying
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CODEMORA - Login</title>
     <link href="./css/global.css" rel="stylesheet" />
@@ -18,18 +18,17 @@ unset($_SESSION['error']); // Clear error after displaying
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow border border-warning border-3" style="max-width: 400px; width: 100%;">
         <h3 class="text-center mb-4">Login</h3>
-
         <?php if ($error): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <?= htmlspecialchars($error); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
-
         <form action="auth.php" method="post">
             <div class="form-group mb-3">
                 <label class="fw-semibold" for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required
+                    value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
             </div>
             <div class="form-group mb-3">
                 <label class="fw-semibold" for="password">Password</label>
