@@ -39,6 +39,12 @@ if (!isset($_SESSION['pretest_start'])) {
     <link href="./css/global.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .main-container {
+            max-width: 60rem;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
         .question-modal {
             display: none;
         }
@@ -111,16 +117,75 @@ if (!isset($_SESSION['pretest_start'])) {
             max-height: 70vh;
             overflow-y: auto;
         }
+
+        .status_wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            /* padding: 1rem; */
+        }
+
+
+        .status_card {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: #fafafa;
+            padding: 1rem;
+        }
+
+        .lives_card {
+            grid-column: span 1;
+            border: 4px solid #ff6a79;
+        }
+
+        .time_card {
+            grid-column: span 1;
+            border: 4px solid #0dcaf0;
+        }
+
+        @media (min-width: 768px) {
+            .status_wrapper {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .time_card {
+                grid-column: span 2;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
+    <div class="main-container mt-5">
         <h1 class="main_title">Pre-test</h1>
-        <div class="alert alert-info progress-info">
-            <p>Lives: <span id="lives"><?php echo $_SESSION['lives']; ?></span></p>
-            <p>Time remaining: <span id="time">60</span> seconds</p>
+        <div class="status_wrapper">
+            <div class="status_card lives_card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart">
+                    <path
+                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+                <span id="lives"><?php echo $_SESSION['lives']; ?></span>
+            </div>
+            <div class="status_card time_card">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-hourglass">
+                    <path d="M5 22h14" />
+                    <path d="M5 2h14" />
+                    <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22" />
+                    <path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" />
+                </svg>
+                <span>Time remaining: <span id="time">60</span> seconds</span>
+            </div>
         </div>
+        <!-- <div class="alert alert-info progress-info">
+        </div> -->
 
         <div id="quiz-container">
             <?php foreach ($questions as $index => $question): ?>
