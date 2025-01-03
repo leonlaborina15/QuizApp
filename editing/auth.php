@@ -1,8 +1,9 @@
 <?php
 session_start();
-include 'db.php'; 
+include 'db.php';
 
-function sanitizeInput($data) {
+function sanitizeInput($data)
+{
     return htmlspecialchars(strip_tags(trim($data)));
 }
 
