@@ -272,8 +272,8 @@ $stmt->close();
     <script>
         const { animate } = Motion;
 
-        animate(document.body, { opacity: [0, 1] }, { duration: 0.5 });
-        animate(".main_title", { opacity: [0, 1], x: ["-5%", "0"] }, { duration: 0.5 });
+        animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
+        animate(".main_title", { opacity: [0, 1], x: ["-5%", "0"] }, { duration: 0.25 });
     </script>
     <script>
         $(document).ready(function () {

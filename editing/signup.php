@@ -10,12 +10,15 @@ unset($_SESSION['error']); // Clear error after displaying
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup</title>
+    <link href="./css/auth.css" rel="stylesheet" />
+    <link href="./css/global.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
-        <h3 class="text-center mb-4">Signup</h3>
+<body>
+    <div class="form_wrapper">
+        <p class="mb-2 fs-4 fw-semibold text-center">Create an account</p>
+        <p class="mb-5 text-center">Sign up to get started.</p>
         <?php if ($error): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <?= htmlspecialchars($error); ?>
@@ -23,32 +26,58 @@ unset($_SESSION['error']); // Clear error after displaying
             </div>
         <?php endif; ?>
         <form action="auth.php" method="post">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required
+            <div class="form-group mb-4">
+                <label class="fw-semibold mb-2" for="username">Username</label>
+                <input type="text" class="form-control shadow-sm" id="username" name="username" minlength="6" required
                     value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
             </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required
+            <div class="form-group mb-4">
+                <label class="fw-semibold mb-2" for="email">Email</label>
+                <input type="email" class="form-control shadow-sm" id="email" name="email" required
                     value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required
-                    value="<?= isset($_POST['password']) ? htmlspecialchars($_POST['password']) : ''; ?>">
+            <div class="form-group mb-4">
+                <label class="fw-semibold mb-2" for="password">Password</label>
+                <input type="password" class="form-control shadow-sm" id="password" name="password" required>
             </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required
-                    value="<?= isset($_POST['confirm_password']) ? htmlspecialchars($_POST['confirm_password']) : ''; ?>">
+            <div class="form-group mb-4">
+                <label class="fw-semibold mb-2" for="confirm_password">Confirm Password</label>
+                <input type="password" class="form-control shadow-sm" name="confirm_password" id="confirm_password" required>
             </div>
-            <button type="submit" name="register" class="btn btn-primary btn-block">Signup</button>
-            <a href="login.php" class="btn btn-link d-block text-center mt-2">Already have an account? Login</a>
+            <button type="submit" name="register" class="btn btn-warning" style="width: 100%;">Sign Up</button>
+            <!-- <a href="login.php" class="btn btn-link d-block text-center mt-2"> </a> -->
+            <span class="mb-0 mt-3" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                Already have an account?
+                <a href="login.php" class="btn btn-link d-block text-center p-0">Log In</a>
+            </span>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
+    <script>
+        const { animate } = Motion;
+
+        animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
+        animate(".form_wrapper", { opacity: [0, 1], y: ["1.5rem", "0"] }, { duration: 0.25 });
+
+        function validatePassword(password) {
+            const length = password.length >= 8;
+            const complexity = /[A-Z]/.test(password) && /[a-z]/.test(password) && /\d/.test(password);
+            return length && complexity;
+        }
+
+        $(document).ready(function () {
+            $('#password').on('input', function () {
+                const password = $(this).val();
+                if (validatePassword(password)) {
+                    $('#password').removeClass('is-invalid').addClass('is-valid');
+                } else {
+                    $('#password').removeClass('is-valid').addClass('is-invalid');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
