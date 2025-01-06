@@ -290,7 +290,12 @@ if (!isset($_SESSION['pretest_start'])) {
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
+    <script>
+        const { animate } = Motion;
 
+        animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
+    </script>
     <script>
 
         $(document).ready(function () {

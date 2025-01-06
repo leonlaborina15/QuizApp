@@ -29,23 +29,22 @@ unset($_SESSION['error']); // Clear error after displaying
             <div class="form-group mb-4">
                 <label class="fw-semibold mb-2" for="username">Username</label>
                 <input type="text" class="form-control shadow-sm" id="username" name="username" minlength="6" required
-                    value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
+                    value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>" placeholder="e.g. Noobmaster69" />
             </div>
             <div class="form-group mb-4">
                 <label class="fw-semibold mb-2" for="email">Email</label>
                 <input type="email" class="form-control shadow-sm" id="email" name="email" required
-                    value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
+                    value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" placeholder="e.g. user@example.com" />
             </div>
             <div class="form-group mb-4">
                 <label class="fw-semibold mb-2" for="password">Password</label>
-                <input type="password" class="form-control shadow-sm" id="password" name="password" required>
+                <input type="password" class="form-control shadow-sm" id="password" name="password" required />
             </div>
             <div class="form-group mb-4">
                 <label class="fw-semibold mb-2" for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control shadow-sm" name="confirm_password" id="confirm_password" required>
+                <input type="password" class="form-control shadow-sm" name="confirm_password" id="confirm_password" required />
             </div>
             <button type="submit" name="register" class="btn btn-warning" style="width: 100%;">Sign Up</button>
-            <!-- <a href="login.php" class="btn btn-link d-block text-center mt-2"> </a> -->
             <span class="mb-0 mt-3" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                 Already have an account?
                 <a href="login.php" class="btn btn-link d-block text-center p-0">Log In</a>

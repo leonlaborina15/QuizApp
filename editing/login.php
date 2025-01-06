@@ -30,7 +30,7 @@ unset($_SESSION['error']); // Clear error after displaying
         <form action="auth.php" method="post">
             <div class="form-group mb-5">
                 <label class="fw-semibold mb-2" for="email">Email</label>
-                <input type="email" class="form-control shadow-sm" id="email" name="email" required
+                <input type="email" class="form-control shadow-sm" id="email" name="email" required placeholder="e.g. user@example.com"
                     value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
             </div>
             <div class="form-group mb-5">
