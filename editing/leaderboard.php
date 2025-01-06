@@ -101,24 +101,22 @@ $stmt->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .best-score {
-            /* outline: lime dashed 1px; */
             background-color: #f8f9fa;
-            padding: 20px;
+            padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
 
-        .current-user {
-            background-color: #e3f2fd;
+        table tbody tr:last-child td:first-child {
+            border-radius: 0 0 0 8px !important;
         }
 
-        .nav-pills .nav-link.active {
-            background-color: #007bff;
+        table tbody tr:last-child td:last-child {
+            border-radius: 0 0 8px 0 !important;
         }
 
-        .dropdown-item.active {
-            background-color: #007bff;
-            color: white;
+        table tbody tr:last-child {
+            border-bottom: transparent;
         }
     </style>
 </head>
@@ -129,26 +127,29 @@ $stmt->close();
 
         <ul class="nav nav-pills mb-4">
             <li class="nav-item dropdown me-2">
-                <a class="nav-link dropdown-toggle <?php echo $test_type != 'time' && $test_type != 'score' ? 'active' : ''; ?>" id="testTypeDropdown"
+                <a class="btn btn-secondary dropdown-toggle <?= $test_type != 'time' && $test_type != 'score' ? 'active' : ''; ?>" id="testTypeDropdown"
                     data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    <?php echo ucfirst($test_type); ?> Tests
+                    <?= ucfirst($test_type); ?> Tests
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item <?php echo $test_type == 'all' ? 'active' : ''; ?>" href="?test_type=all&sort_by=<?php echo $sort_by; ?>">All
-                        Tests</a>
-                    <a class="dropdown-item <?php echo $test_type == 'pre' ? 'active' : ''; ?>"
-                        href="?test_type=pre&sort_by=<?php echo $sort_by; ?>">Pre-Tests</a>
-                    <a class="dropdown-item <?php echo $test_type == 'post' ? 'active' : ''; ?>"
-                        href="?test_type=post&sort_by=<?php echo $sort_by; ?>">Post-Tests</a>
+                    <a class="dropdown-item <?= $test_type == 'all' ? 'active' : ''; ?>" href="?test_type=all&sort_by=<?= $sort_by; ?>">
+                        All Tests
+                    </a>
+                    <a class="dropdown-item <?= $test_type == 'pre' ?? 'active'; ?>" href="?test_type=pre&sort_by=<?= $sort_by; ?>">
+                        Pre-Tests
+                    </a>
+                    <a class="dropdown-item <?= $test_type == 'post' ?? 'active'; ?>" href="?test_type=post&sort_by=<?= $sort_by; ?>">
+                        Post-Tests
+                    </a>
                 </div>
             </li>
             <li class="nav-item ">
-                <a class="nav-link <?php echo $sort_by == 'time' ? 'active bg-primary text-light' : 'text-light'; ?>"
+                <a class="btn btn-secondary me-2 <?php echo $sort_by == 'time' ? 'active text-light' : 'text-light'; ?>"
                     href="?sort_by=time&test_type=<?php echo $test_type; ?>">By
                     Time</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?php echo $sort_by == 'score' ? 'active bg-primary text-light' : 'text-light'; ?>"
+                <a class="btn btn-secondary <?php echo $sort_by == 'score' ? 'active text-light' : 'text-light'; ?>"
                     href="?sort_by=score&test_type=<?php echo $test_type; ?>">By
                     Score</a>
             </li>
@@ -223,34 +224,43 @@ $stmt->close();
             </div>
         <?php endif; ?>
 
-        <table class="table">
+        <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Rank</th>
+                    <th style="border-radius: 8px 0 0 0;">Rank</th>
                     <th>Username</th>
                     <th>Score</th>
                     <th>Time</th>
                     <th>Test Type</th>
-                    <th>Date</th>
+                    <th style="border-radius: 0 8px 0 0;">Date</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($leaderboard as $index => $entry): ?>
-                    <tr class="<?php echo strpos($entry['username'], $current_username) !== false ? 'current-user' : ''; ?>">
-                        <td>
+                    <tr class="<?php echo strpos($entry['username'], $current_username) !== false ? 'table-active' : ''; ?>">
+                        <td style="<?php echo ($index >= 3) ? 'padding-left: .8rem;' : ''; ?>">
                             <?php
                             $rank = $index + 1;
-                            if ($rank == 1) {
-                                echo "🥇";
-                            } elseif ($rank == 2) {
-                                echo "🥈";
-                            } elseif ($rank == 3) {
-                                echo "🥉";
+                            switch ($rank) {
+                                case 1:
+                                    echo "🥇";
+                                    break;
+                                case 2:
+                                    echo "🥈";
+                                    break;
+                                case 3:
+                                    echo "🥉";
+                                    break;
+                                default:
+                                    echo $rank;
+                                    break;
                             }
-                            echo $rank;
                             ?>
                         </td>
-                        <td><?php echo htmlspecialchars($entry['username'] . $entry['is_current_user']); ?></td>
+                        <td>
+                            <?php echo htmlspecialchars($entry['username']); ?>
+                            <span class="fw-semibold"><?php echo htmlspecialchars($entry['is_current_user']) ?></span>
+                        </td>
                         <td><?php echo $entry['score']; ?></td>
                         <td><?php echo $entry['time_taken']; ?> seconds</td>
                         <td><?php echo ucfirst($entry['test_type']); ?></td>

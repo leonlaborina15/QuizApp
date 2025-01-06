@@ -162,7 +162,7 @@ if (!isset($_SESSION['pretest_start'])) {
 </head>
 
 <body>
-    <div class="main-container mt-5">
+    <div class="main-container">
         <h1 class="main_title">Pre-test</h1>
         <div class="status_wrapper">
             <div class="status_card lives_card">
