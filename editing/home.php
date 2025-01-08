@@ -30,7 +30,7 @@ session_start();
     <script>
         const { animate } = Motion;
 
-        animate(document.body, { opacity: [0, 1] }, { duration: 0.5 });
+        animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
     </script>
 </body>
 

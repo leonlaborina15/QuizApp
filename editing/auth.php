@@ -25,8 +25,9 @@ if (isset($_POST['register'])) {
         exit();
     }
 
-    if (strlen($password) < 8 || $password[0] !== strtoupper($password[0])) {
-        $_SESSION['error'] = "Password must be at least 8 characters and start with an uppercase letter.";
+    if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/\d/', $password)) {
+        $_SESSION['error'] =
+            "Password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.";
         header("Location: signup.php");
         exit();
     }
