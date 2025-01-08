@@ -67,7 +67,6 @@ if (!isset($_SESSION['user_id'])) {
     <div class="main-container">
         <h1 class="main_title text-center">Adobe Photoshop Tools Guide</h1>
 
-        <!-- Introduction Section -->
         <div class="guide-section">
             <h2 class="h3 mb-4">Introduction</h2>
             <p>
@@ -76,7 +75,6 @@ if (!isset($_SESSION['user_id'])) {
             </p>
         </div>
 
-        <!-- Quiz Format Section -->
         <div class="guide-section">
             <h3 class="h4 mb-3">Quiz Format</h3>
             <ul class="rules-list">
@@ -88,7 +86,6 @@ if (!isset($_SESSION['user_id'])) {
             </ul>
         </div>
 
-        <!-- Tools Overview Section -->
         <div class="guide-section">
             <h3 class="h4 mb-4">Photoshop Tools Overview</h3>
 
@@ -148,7 +145,6 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-        <!-- Tips Section -->
         <div class="guide-section">
             <h3 class="h4 mb-3">Tips for Success</h3>
             <ul class="rules-list">
@@ -159,7 +155,6 @@ if (!isset($_SESSION['user_id'])) {
             </ul>
         </div>
 
-        <!-- Navigation Buttons -->
         <div class="text-center mb-5">
             <a href="index.php" class="btn btn-secondary btn-lg btn-proceed me-3">Back to Home</a>
             <a href="pretest.php" class="btn btn-warning btn-lg btn-proceed">Start Quiz</a>
