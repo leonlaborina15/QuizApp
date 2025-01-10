@@ -162,7 +162,7 @@ if (!isset($_SESSION['user_id'])) {
         <!-- Navigation Buttons -->
         <div class="text-center mb-5">
             <a href="index.php" class="btn btn-secondary btn-lg btn-proceed me-3">Back to Home</a>
-            <a href="pretest.php" class="btn btn-warning btn-lg btn-proceed">Start Quiz</a>
+            <a href="pretest.php?category=editing" class="btn btn-warning btn-lg btn-proceed">Start Quiz</a>
         </div>
     </div>
 

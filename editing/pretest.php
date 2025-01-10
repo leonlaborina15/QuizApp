@@ -398,15 +398,15 @@ if (!isset($_SESSION['pretest_start'])) {
                 let resultsHtml = '';
                 quizResults.forEach((result, index) => {
                     resultsHtml += `
-                <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
-                    <h5>Question ${index + 1}</h5>
-                    <p><strong>Question:</strong> ${result.question_text}</p>
-                    <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
-                    ${!result.is_correct ?
+                    <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
+                        <h5>Question ${index + 1}</h5>
+                        <p><strong>Question:</strong> ${result.question_text}</p>
+                        <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
+                        ${!result.is_correct ?
                             `<p><strong>Correct Answer:</strong> ${result.correct_answer_text}</p>`
                             : ''}
-                </div>
-            `;
+                    </div>
+                `;
                 });
 
                 $('#detailedResults').html(resultsHtml);
@@ -500,15 +500,15 @@ if (!isset($_SESSION['pretest_start'])) {
             let resultsHtml = '';
             quizResults.forEach((result, index) => {
                 resultsHtml += `
-            <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
-                <h5>Question ${index + 1}</h5>
-                <p><strong>Question:</strong> ${result.question_text}</p>
-                <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
-                ${!result.is_correct ?
+                <div class="${result.is_correct ? 'correct-answer' : 'wrong-answer'}">
+                    <h5>Question ${index + 1}</h5>
+                    <p><strong>Question:</strong> ${result.question_text}</p>
+                    <p><strong>Your Answer:</strong> ${result.user_answer_text}</p>
+                    ${!result.is_correct ?
                         `<p><strong>Correct Answer:</strong> ${result.correct_answer_text}</p>`
                         : ''}
-            </div>
-        `;
+                </div>
+            `;
             });
 
             $('#detailedResults').html(resultsHtml);
