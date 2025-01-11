@@ -100,6 +100,10 @@ $stmt->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        .hidden {
+            opacity: 0;
+        }
+
         .best-score {
             background-color: #f8f9fa;
             padding: 1rem;
@@ -122,11 +126,11 @@ $stmt->close();
 </head>
 
 <body>
-    <div class="container mt-4">
-        <h1 class="main_title">Leaderboard</h1>
+    <div class="container mt-4 hidden">
+        <h1 class="main_title hidden">Leaderboard</h1>
 
-        <ul class="nav nav-pills mb-4">
-            <li class="nav-item dropdown me-2">
+        <ul id="filter-wrapper" class="nav nav-pills mb-4 position-relative z-3 hidden">
+            <li class="nav-item dropdown me-2 z-3">
                 <a class="btn btn-secondary dropdown-toggle <?= $test_type != 'time' && $test_type != 'score' ? 'active' : ''; ?>" id="testTypeDropdown"
                     data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <?= ucfirst($test_type); ?> Tests
@@ -156,7 +160,7 @@ $stmt->close();
         </ul>
 
         <?php if ($best_performance): ?>
-            <div class="best-score">
+            <div class="best-score hidden">
                 <h3>Leaderboard - <?php echo $sort_by == 'score' ? 'By Score' : 'By Time'; ?></h3>
                 <h4>Your Best Performance</h4>
                 <div class="row">
@@ -224,7 +228,7 @@ $stmt->close();
             </div>
         <?php endif; ?>
 
-        <table class="table table-hover">
+        <table class="table table-hover hidden">
             <thead>
                 <tr>
                     <th style="border-radius: 8px 0 0 0;">Rank</th>
@@ -271,7 +275,7 @@ $stmt->close();
         </table>
 
         <div class="mt-4 mb-5">
-            <a href="index.php" class="btn btn-warning">Back to Home</a>
+            <a href="index.php" class="btn btn-warning hidden">Back to Home</a>
         </div>
     </div>
 
@@ -283,10 +287,21 @@ $stmt->close();
         const { animate } = Motion;
 
         animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
-        animate(".main_title", { opacity: [0, 1], x: ["-5%", "0"] }, { duration: 0.25 });
-    </script>
-    <script>
-        $(document).ready(function () {
+        function animateElement(selector, delay = 0) {
+            animate(selector,
+                { opacity: [0, 1], x: [-20, 0], filter: ["blur(10px)", "blur(0px)"], scale: selector === ".main_title" ? [0.9, 1] : 1 },
+                { type: "spring", damping: 12, stiffness: 100, duration: 0.5, delay: delay }
+            );
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            animateElement(".container");
+            animateElement(".main_title", 0.25);
+            animateElement("#filter-wrapper", 0.5);
+            animateElement(".best-score", 0.75);
+            animateElement(".table", 1);
+            animateElement("a[href='index.php']", 1.25);
+
             // Initialize Bootstrap dropdowns
             $('.dropdown-toggle').dropdown();
         });

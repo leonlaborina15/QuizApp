@@ -17,7 +17,7 @@ session_start();
     <h1 class="main_title">Welcome to the Quiz App</h1>
     <?php if (isset($_SESSION['user_id'])): ?>
       <form action="pretest.php" method="get" class="mb-3 row w-50 m-auto">
-        <a href="guide.php" class="btn btn-warning fs-5 mb-4">Take Quiz</a>
+        <a href="pick_category.php" class="btn btn-warning fs-5 mb-4">Take Quiz</a>
         <a href="leaderboard.php" class="btn btn-info fs-5 mb-4">View Leaderboard</a>
         <a href="logout.php" class="btn btn-danger fs-5">Logout</a>
       </form>
