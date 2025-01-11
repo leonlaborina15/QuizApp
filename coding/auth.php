@@ -2,7 +2,8 @@
 session_start();
 include 'db.php';
 
-function sanitizeInput($data) {
+function sanitizeInput($data)
+{
     return htmlspecialchars(strip_tags(trim($data)));
 }
 
@@ -25,7 +26,8 @@ if (isset($_POST['register'])) {
     }
 
     if (strlen($password) < 8 || !preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/\d/', $password)) {
-        $_SESSION['error'] = "Password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.";
+        $_SESSION['error'] =
+            "Password must be at least 8 characters long and include uppercase, lowercase letters, and numbers.";
         header("Location: signup.php");
         exit();
     }
@@ -74,6 +76,7 @@ if (isset($_POST['login'])) {
     $stmt->execute();
     $stmt->bind_result($user_id, $hash);
     if ($stmt->fetch() && password_verify($password, $hash)) {
+        // Login successful
         $_SESSION['user_id'] = $user_id;
         $stmt->close();
         header("Location: index.php");

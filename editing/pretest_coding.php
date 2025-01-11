@@ -2,15 +2,16 @@
 session_start();
 include 'db.php';
 
+// Redirect to login if user is not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-$category = isset($_GET['category']) ? $_GET['category'] : 'editing';
+$category = isset($_GET['category']) ? $_GET['category'] : 'coding';
 
-// Fetch questions
+// Fetch questions from the database
 try {
     $stmt = $conn->prepare("SELECT * FROM Questions WHERE category = ? ORDER BY RAND() LIMIT 15");
     $stmt->bind_param("s", $category);
@@ -22,6 +23,7 @@ try {
     die("Error fetching questions: " . $e->getMessage());
 }
 
+// Initialize session variables if not set
 if (!isset($_SESSION['lives'])) {
     $_SESSION['lives'] = 3;
 }
@@ -37,129 +39,7 @@ if (!isset($_SESSION['pretest_start'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pre-test</title>
     <link href="./css/global.css" rel="stylesheet" />
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .main-container {
-            max-width: 60rem;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .question-modal {
-            display: none;
-        }
-
-        .question-modal.active {
-            display: block;
-        }
-
-        .form-check {
-            padding: 15px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .form-check:hover {
-            background-color: #f8f9fa;
-        }
-
-        .form-check-input {
-            margin-top: 3px;
-        }
-
-        .form-check-label {
-            width: 100%;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .card {
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-navigation {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .progress-info {
-            margin-bottom: 20px;
-        }
-
-        .correct-answer {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .wrong-answer {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .score-summary {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .modal-body {
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .status_wrapper {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            /* padding: 1rem; */
-        }
-
-
-        .status_card {
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 600;
-            background: #fafafa;
-            padding: 1rem;
-        }
-
-        .lives_card {
-            grid-column: span 1;
-            border: 4px solid #ff6a79;
-        }
-
-        .time_card {
-            grid-column: span 1;
-            border: 4px solid #0dcaf0;
-        }
-
-        @media (min-width: 768px) {
-            .status_wrapper {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .time_card {
-                grid-column: span 2;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -185,59 +65,60 @@ if (!isset($_SESSION['pretest_start'])) {
                 <span>Time remaining: <span id="time">60</span> seconds</span>
             </div>
         </div>
-        <!-- <div class="alert alert-info progress-info">
-        </div> -->
 
         <div id="quiz-container">
-            <?php foreach ($questions as $index => $question): ?>
-                <div id="question-<?php echo $index; ?>" class="question-modal <?php echo $index === 0 ? 'active' : ''; ?>">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Question <?php echo $index + 1; ?> of <?php echo count($questions); ?></h5>
-                            <p class="card-text"><?php echo $question['question_text']; ?></p>
+            <?php if (count($questions) > 0): ?>
+                <?php foreach ($questions as $index => $question): ?>
+                    <div id="question-<?php echo $index; ?>" class="question-modal <?php echo $index === 0 ? 'active' : ''; ?>">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Question <?php echo $index + 1; ?> of <?php echo count($questions); ?></h5>
+                                <p class="card-text"><?php echo $question['question_text']; ?></p>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_a_<?php echo $index; ?>" value="A">
-                                <label class="form-check-label" for="choice_a_<?php echo $index; ?>">
-                                    <?php echo $question['choice_a']; ?>
-                                </label>
-                            </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_a_<?php echo $index; ?>" value="A">
+                                    <label class="form-check-label" for="choice_a_<?php echo $index; ?>">
+                                        <?php echo $question['choice_a']; ?>
+                                    </label>
+                                </div>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_b_<?php echo $index; ?>" value="B">
-                                <label class="form-check-label" for="choice_b_<?php echo $index; ?>">
-                                    <?php echo $question['choice_b']; ?>
-                                </label>
-                            </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_b_<?php echo $index; ?>" value="B">
+                                    <label class="form-check-label" for="choice_b_<?php echo $index; ?>">
+                                        <?php echo $question['choice_b']; ?>
+                                    </label>
+                                </div>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_c_<?php echo $index; ?>" value="C">
-                                <label class="form-check-label" for="choice_c_<?php echo $index; ?>">
-                                    <?php echo $question['choice_c']; ?>
-                                </label>
-                            </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_c_<?php echo $index; ?>" value="C">
+                                    <label class="form-check-label" for="choice_c_<?php echo $index; ?>">
+                                        <?php echo $question['choice_c']; ?>
+                                    </label>
+                                </div>
 
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_d_<?php echo $index; ?>" value="D">
-                                <label class="form-check-label" for="choice_d_<?php echo $index; ?>">
-                                    <?php echo $question['choice_d']; ?>
-                                </label>
-                            </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question<?php echo $index; ?>" id="choice_d_<?php echo $index; ?>" value="D">
+                                    <label class="form-check-label" for="choice_d_<?php echo $index; ?>">
+                                        <?php echo $question['choice_d']; ?>
+                                    </label>
+                                </div>
 
-                            <div class="mt-3">
-                                <button type="button" class="btn btn-primary next-btn" data-question="<?php echo $question['question_id']; ?>"
-                                    data-index="<?php echo $index; ?>">
-                                    <?php echo $index < count($questions) - 1 ? 'Next' : 'Finish'; ?>
-                                </button>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-primary next-btn" data-question="<?php echo $question['question_id']; ?>"
+                                        data-index="<?php echo $index; ?>">
+                                        <?php echo $index < count($questions) - 1 ? 'Next' : 'Finish'; ?>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No questions found for the selected category.</p>
+            <?php endif; ?>
         </div>
     </div>
-
-    <!-- Game Over Modal -->
+<!-- Game Over Modal -->
     <div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -288,6 +169,8 @@ if (!isset($_SESSION['pretest_start'])) {
         </div>
     </div>
 
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -296,8 +179,6 @@ if (!isset($_SESSION['pretest_start'])) {
         const { animate } = Motion;
 
         animate(document.body, { opacity: [0, 1] }, { duration: 0.25 });
-    </script>
-    <script>
 
         $(document).ready(function () {
             let currentQuestion = 0;
