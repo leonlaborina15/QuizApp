@@ -251,8 +251,9 @@ if (!isset($_SESSION['pretest_start'])) {
                         <p>Time Taken: <span id="timeTaken">0</span> seconds</p>
                     </div>
                     <div class="text-center">
+
                         <button type="button" class="btn btn-primary btn-navigation" onclick="showResults()">View Results</button>
-                        <a href="phase2.php" class="btn btn-success btn-navigation">Proceed to Phase Two</a>
+                        <a href="<?= ($category === 'coding') ? 'phase2_coding.php' : 'phase2.php'; ?>" class="btn btn-success btn-navigation">Proceed to Phase Two</a>
                         <a href="index.php" class="btn btn-secondary btn-navigation">Back to Home</a>
                     </div>
                 </div>

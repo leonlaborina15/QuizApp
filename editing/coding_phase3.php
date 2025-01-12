@@ -235,14 +235,14 @@ if (!isset($questions[$current_question])) {
         }
 
         .code-textarea {
-            width: 100%;
+            width: 97%;
             height: 200px;
             padding: 10px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background-color: var(--background-light);
+            background-color: #A6CDC6;
             margin-bottom: 20px;
         }
 
@@ -251,6 +251,18 @@ if (!isset($questions[$current_question])) {
             justify-content: space-between;
             gap: 10px;
             margin: 20px 0;
+        }
+
+        .button-group-left {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .button-group-right {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
 
         .button {
@@ -265,6 +277,9 @@ if (!isset($questions[$current_question])) {
         .run-btn {
             background-color: var(--success-color);
             color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .nav-btn {
@@ -325,13 +340,22 @@ if (!isset($questions[$current_question])) {
                 ?></textarea>
 
                 <div class="button-group">
-                    <button type="submit" name="prev" class="button nav-btn" <?php if ($current_question <= 1) echo 'disabled'; ?>>
-                        Previous
-                    </button>
-                    <button type="button" id="runCode" class="button run-btn">Run Code</button>
-                    <button type="submit" name="next" class="button nav-btn" <?php if ($current_question >= count($questions)) echo 'disabled'; ?>>
-                        Next
-                    </button>
+                    <div class="button-group-left">
+                        <button type="button" id="runCode" class="button run-btn">
+                            <i class="fas fa-play"></i> Run Code
+                        </button>
+                    </div>
+                   <div class="button-group-right">
+    <button type="submit" name="prev" class="button nav-btn" <?php if ($current_question <= 1) echo 'disabled'; ?>>
+        Previous
+    </button>
+    <?php if ($current_question < count($questions)): ?>
+        <button type="submit" name="next" class="button nav-btn">Next</button>
+    <?php else: ?>
+        <a href="http://localhost/quizApp/editing/index.php" class="button nav-btn">Home</a>
+    <?php endif; ?>
+</div>
+
                 </div>
             </form>
         </div>
