@@ -8,9 +8,10 @@ $questions = [
             '<!DOCTYPE html>',
             '<html>',
             '',
+            '',
             '</html>'
         ],
-        'expected_elements' => ['body'],
+        'expected_elements' => ['body', '/body'],
         'content' => ['This is a paragraph inside the body.']
     ],
     2 => [
@@ -19,13 +20,16 @@ $questions = [
             '<!DOCTYPE html>',
             '<html>',
             '',
+            '',
+            '',
+            '',
             '<body>',
             '    <p>This is some body content.</p>',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['head', 'title'],
-        'content' => ['My Dynamic Page'] // Content for the title
+        'expected_elements' => ['head', 'title', '/title', '/head'],
+        'content' => ['My Dynamic Page']
     ],
     3 => [
         'question' => 'Add a list inside the body:',
@@ -34,11 +38,14 @@ $questions = [
             '<html>',
             '<body>',
             '',
+            '',
+            '',
+            '',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['ul', 'li'],
-        'content' => ['Item 1', 'Item 2', 'Item 3'] // Content for the list items
+        'expected_elements' => ['ul', 'li', '/li', '/ul'],
+        'content' => ['Item 1', 'Item 2', 'Item 3']
     ],
 ];
 
@@ -62,15 +69,36 @@ if (!isset($questions[$current_question])) {
     $current_question = 1;
     $_SESSION['current_question'] = $current_question;
 }
+
+function renderInitialCode($initial_code, $expected_elements)
+{
+    $drop_zone_count = 0;
+    foreach ($initial_code as $line) {
+        if (trim($line) === '') {
+            echo "<div class='drop-zone' data-expected='" . $expected_elements[$drop_zone_count] . "'></div>\n";
+            $drop_zone_count++;
+        } else {
+            echo htmlspecialchars($line) . "\n";
+        }
+    }
+}
+
+function renderChoices($expected_elements)
+{
+    foreach ($expected_elements as $element) {
+        echo "<div class='draggable' draggable='true' data-element='$element'>&lt;$element&gt;</div>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HTML Drag-and-Drop Quiz</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-           :root {
+        :root {
             --primary-color: #0C356A;
             --secondary-color: #0174BE;
             --highlight-color: #FFC436;
@@ -261,6 +289,7 @@ if (!isset($questions[$current_question])) {
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="question-header">
@@ -275,48 +304,24 @@ if (!isset($questions[$current_question])) {
 
         <div id="code" class="tab-content active">
             <div class="code-preview">
-                <?php
-                foreach ($questions[$current_question]['initial_code'] as $line) {
-                    if (trim($line) === '') {
-                        // Insert drop zones where needed
-                        $expectedElements = $questions[$current_question]['expected_elements'];
-                        foreach ($expectedElements as $element) {
-                            echo "<div class='drop-zone' data-expected='$element-open'></div>\n";
-                            echo "<div class='drop-zone' data-expected='$element-close'></div>\n";
-                        }
-                    } else {
-                        echo htmlspecialchars($line) . "\n";
-                    }
-                }
-                ?>
+                <?php renderInitialCode($questions[$current_question]['initial_code'], $questions[$current_question]['expected_elements']); ?>
             </div>
 
             <div class="choices-container">
                 <h4>Drag the correct tags below:</h4>
                 <div class="drag-container">
-                    <?php
-                    // Dynamically generate choices based on the current question
-                    $choices = $questions[$current_question]['expected_elements'];
-                    foreach ($choices as $choice): ?>
-                        <div class="draggable" draggable="true" data-element="<?php echo $choice; ?>-open">
-                            &lt;<?php echo $choice; ?>&gt;
-                        </div>
-                        <div class="draggable" draggable="true" data-element="<?php echo $choice; ?>-close">
-                            &lt;/<?php echo $choice; ?>&gt;
-                        </div>
-                    <?php endforeach; ?>
+                    <?php renderChoices($questions[$current_question]['expected_elements']); ?>
                 </div>
             </div>
 
-            <!-- Form for Previous and Next buttons -->
             <form method="post" class="button-group">
+                <div class="button-group-left">
+                    <button type="submit" name="prev" class="button nav-btn" <?php if ($current_question <= 1)
+                        echo 'disabled'; ?>>Previous</button>
+                </div>
                 <div class="button-group-right">
-                    <button type="submit" name="prev" class="button nav-btn" <?php if ($current_question <= 1) echo 'disabled'; ?>>
-                        Previous
-                    </button>
-                    <button type="submit" name="next" class="button nav-btn" <?php if ($current_question >= count($questions)) echo 'disabled'; ?>>
-                        Next
-                    </button>
+                    <button type="submit" name="next" class="button nav-btn" <?php if ($current_question >= count($questions))
+                        echo 'disabled'; ?>>Next</button>
                 </div>
             </form>
         </div>
@@ -338,33 +343,33 @@ if (!isset($questions[$current_question])) {
         });
 
         document.querySelectorAll('.draggable').forEach(draggable => {
-            draggable.addEventListener('dragstart', function(e) {
+            draggable.addEventListener('dragstart', function (e) {
                 e.dataTransfer.setData('text', this.getAttribute('data-element'));
             });
         });
 
         document.querySelectorAll('.drop-zone').forEach(zone => {
-            zone.addEventListener('dragover', function(e) {
+            zone.addEventListener('dragover', function (e) {
                 e.preventDefault();
             });
 
-            zone.addEventListener('drop', function(e) {
+            zone.addEventListener('drop', function (e) {
                 e.preventDefault();
                 const element = e.dataTransfer.getData('text');
                 const expected = this.getAttribute('data-expected');
 
                 if (element === expected) {
-                    this.innerHTML = `&lt;${element.replace('-open', '').replace('-close', '/')}&gt;`;
+                    this.innerHTML = `&lt;${element}&gt;`;
                     this.classList.add('valid');
                     this.classList.remove('invalid');
                 } else {
-                    this.innerHTML = `&lt;${element.replace('-open', '').replace('-close', '/')}&gt;`;
+                    this.innerHTML = `&lt;${element}&gt;`;
                     this.classList.add('invalid');
                     this.classList.remove('valid');
                 }
 
-                checkResults(); // Automatically check results after a drop
-                updateOutput(); // Automatically update the output after a drop
+                checkResults();
+                updateOutput();
             });
         });
 
@@ -372,37 +377,11 @@ if (!isset($questions[$current_question])) {
             const dropZones = document.querySelectorAll('.drop-zone');
             let allValid = true;
 
-            // Check if all drop zones are valid
             dropZones.forEach(zone => {
                 if (!zone.classList.contains('valid')) {
                     allValid = false;
                 }
             });
-
-            // Check nesting rules
-            if (allValid) {
-                const codePreview = document.querySelector('.code-preview').innerText;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(codePreview, 'text/html');
-
-                // Check if <title> is inside <head>
-                if (<?php echo $current_question; ?> === 2) {
-                    const head = doc.querySelector('head');
-                    const title = head ? head.querySelector('title') : null;
-                    if (!title) {
-                        allValid = false;
-                    }
-                }
-
-                // Check if <li> is inside <ul>
-                if (<?php echo $current_question; ?> === 3) {
-                    const ul = doc.querySelector('ul');
-                    const li = ul ? ul.querySelector('li') : null;
-                    if (!li) {
-                        allValid = false;
-                    }
-                }
-            }
 
             const resultContainer = document.getElementById('resultContent');
             if (allValid) {
@@ -414,21 +393,11 @@ if (!isset($questions[$current_question])) {
 
         function updateOutput() {
             const dropZones = document.querySelectorAll('.drop-zone');
-            let htmlCode = `<!DOCTYPE html>
-<html>
-`;
+            let htmlCode = `<!DOCTYPE html>\n<html>\n`;
 
-            if (<?php echo $current_question; ?> == 1) {
-                htmlCode += '  <body>\n    <p><?php echo htmlspecialchars($questions[1]['content'][0]); ?></p>\n  </body>\n';
-            } else if (<?php echo $current_question; ?> == 2) {
-                htmlCode += '  <head>\n    <title><?php echo htmlspecialchars($questions[2]['content'][0]); ?></title>\n  </head>\n  <body>\n    <p>This is some body content.</p>\n  </body>\n';
-            } else if (<?php echo $current_question; ?> == 3) {
-                htmlCode += '  <body>\n    <ul>\n';
-                <?php foreach ($questions[3]['content'] as $item): ?>
-                    htmlCode += '      <li><?php echo htmlspecialchars($item); ?></li>\n';
-                <?php endforeach; ?>
-                htmlCode += '    </ul>\n  </body>\n';
-            }
+            dropZones.forEach(zone => {
+                htmlCode += zone.innerHTML + '\n';
+            });
 
             htmlCode += `</html>`;
 
@@ -437,4 +406,5 @@ if (!isset($questions[$current_question])) {
         }
     </script>
 </body>
+
 </html>

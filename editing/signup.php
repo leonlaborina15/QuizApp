@@ -16,7 +16,7 @@ unset($_SESSION['error']); // Clear error after displaying
 </head>
 
 <body>
-    <div class="form_wrapper">
+    <div class="hidden form_wrapper">
         <p class="mb-2 fs-4 fw-semibold text-center">Create an account</p>
         <p class="mb-5 text-center">Sign up to get started.</p>
         <?php if ($error): ?>

@@ -100,10 +100,6 @@ $stmt->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        .hidden {
-            opacity: 0;
-        }
-
         .best-score {
             background-color: #f8f9fa;
             padding: 1rem;
@@ -275,7 +271,7 @@ $stmt->close();
         </table>
 
         <div class="mt-4 mb-5">
-            <a href="index.php" class="btn btn-warning hidden">Back to Home</a>
+            <a href="index.php" class="hidden btn btn-warning fs-5 fw-semibold text-warning-emphasis">Back to Home</a>
         </div>
     </div>
 
@@ -302,7 +298,6 @@ $stmt->close();
             animateElement(".table", 1);
             animateElement("a[href='index.php']", 1.25);
 
-            // Initialize Bootstrap dropdowns
             $('.dropdown-toggle').dropdown();
         });
     </script>

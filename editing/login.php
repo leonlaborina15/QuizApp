@@ -16,9 +16,7 @@ unset($_SESSION['error']); // Clear error after displaying
 </head>
 
 <body>
-    <!-- <div class="wrapper"> -->
-    <!-- <h1 class="main_title">CODEMORA</h1> -->
-    <div class="form_wrapper">
+    <div class="hidden form_wrapper">
         <p class="mb-2 fs-4 fw-semibold text-center">Welcome back!</p>
         <p class="mb-5 text-center">Log in to your account to continue.</p>
         <?php if ($error): ?>

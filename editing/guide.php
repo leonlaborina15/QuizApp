@@ -16,17 +16,6 @@ if (!isset($_SESSION['user_id'])) {
     <link href="./css/global.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .main-container {
-            max-width: 60rem;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .main-title {
-            font-weight: 600;
-            margin-bottom: 2rem;
-        }
-
         .guide-section {
             background-color: #ffffff;
             border-radius: 10px;
@@ -56,14 +45,10 @@ if (!isset($_SESSION['user_id'])) {
             color: #007bff;
             font-size: 1.2em;
         }
-
-        .btn-proceed {
-            margin-top: 1rem;
-        }
     </style>
 </head>
 
-<body>
+<body class="hidden">
     <div class="main-container">
         <h1 class="main_title text-center">Adobe Photoshop Tools Guide</h1>
 
@@ -156,8 +141,8 @@ if (!isset($_SESSION['user_id'])) {
         </div>
 
         <div class="text-center mb-5">
-            <a href="index.php" class="btn btn-secondary btn-lg btn-proceed me-3">Back to Home</a>
-            <a href="pretest.php?category=editing" class="btn btn-warning btn-lg btn-proceed">Start Quiz</a>
+            <a href="index.php" class="btn btn-secondary fs-5 fw-semibold me-4">Back to Home</a>
+            <a href="pretest.php?category=editing" class="btn btn-warning fs-5 fw-semibold text-warning-emphasis">Start Quiz</a>
         </div>
     </div>
 
