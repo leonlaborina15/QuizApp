@@ -161,7 +161,7 @@ if (!isset($_SESSION['posttest_start'])) {
     </style>
 </head>
 
-<body>
+<body class="hidden">
     <div class="main-container">
         <h1 class="main_title">Post-test</h1>
         <div class="status_wrapper">

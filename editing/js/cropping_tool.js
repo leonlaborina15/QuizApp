@@ -10,12 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
 	const uploadInput = document.getElementById("upload") // File input element
 	const uploadedImageContainer = document.getElementById("uploaded-image-container") // Container for the uploaded image
 	const uploadedImage = document.getElementById("uploaded-image") // Uploaded image element
-	const backToHome = document.getElementById("back-to-home") // Button to enable cropping tool
+	const rotateContainer = document.getElementById("rotate-container") // Container for rotate input
 	const toolButton = document.getElementById("tool-button") // Button to enable cropping tool
 	const uploadResultButton = document.getElementById("upload-result") // Button to get cropped result
 	const resetToolButton = document.getElementById("reset-tool") // Button to reset the tool
 	const nextToolButton = document.getElementById("next-tool") // Button to proceed to the next step
 	const croppedImageResult = document.getElementById("upload-demo") // Container for displaying cropped image result
+	const postTestButton = document.getElementById("post-test") // Button to proceed to the post-test
 
 	// Modals
 	const errorModal = new bootstrap.Modal(document.getElementById("errorModal")) // Error modal for displaying messages
@@ -83,7 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			uploadContainer.style.width = 0 // Set width of upload container to 0
 
 			toolButton.style.display = "block" // Display tool button
-			backToHome.style.display = "none" // Display back to home button
+			rotateContainer.style.width = 0 // Set width of rotate container to 0
+			postTestButton.style.display = "none" // Hide post-test button
 			image.src = e.target.result // Set image source for cropping
 		}
 		reader.readAsDataURL(file) // Read file as data URL

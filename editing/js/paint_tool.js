@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Get the image element
 	const image = document.getElementById("image")
 
+	// Get the post test button element
+	const postTestButton = document.getElementById("post-test")
+
 	// Add an event listener to the next tool button to switch tools when clicked
 	nextToolButton.addEventListener("click", switchTool)
 
@@ -58,6 +61,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 			// Change the next button text to "Previous"
 			nextToolButton.textContent = "Previous"
+
+			// Enable the post-test button
+			postTestButton.style.display = "block"
 
 			// Enable the next button
 			nextToolButton.disabled = false
