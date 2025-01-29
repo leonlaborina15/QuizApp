@@ -40,7 +40,6 @@ $result = $stmt->get_result();
 $best_performance = $result->fetch_assoc();
 $stmt->close();
 
-// Modify the queries to include test_type filter
 if ($sort_by == 'score') {
     $query = "
         SELECT u.username, r.score, r.time_taken, r.created_at, r.test_type,
@@ -54,10 +53,12 @@ if ($sort_by == 'score') {
             GROUP BY user_id
         ) maxScores ON r.user_id = maxScores.user_id AND r.score = maxScores.max_score
         " . ($test_type != 'all' ? "WHERE r.test_type = ?" : "") . "
+        GROUP BY u.user_id
         ORDER BY r.score DESC, r.time_taken ASC
         LIMIT 100
     ";
-} else {
+}
+ else {
     $query = "
         SELECT u.username, r.score, r.time_taken, r.created_at, r.test_type,
                IF(u.user_id = ?, ' You', '') as is_current_user

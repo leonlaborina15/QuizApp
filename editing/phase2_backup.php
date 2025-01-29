@@ -6,29 +6,32 @@ $questions = [
         'initial_code' => [
             '<!DOCTYPE html>',
             '<html>',
+            '<head>',
+            '<title>Document</title>',
+            '</head>',
             '',
+            '<p>',
+            ' This is a paragraph inside the body.',
+            '</p>',
             '',
             '</html>'
         ],
-        'expected_elements' => ['body', '/body'],
-        'content' => ['This is a paragraph inside the body.']
+        'expected_elements' => ['body', '/body']
     ],
     2 => [
         'question' => 'Add a head with a title:',
         'initial_code' => [
             '<!DOCTYPE html>',
             '<html>',
-            '',
-            '',
-            '',
-            '',
+            '<head>',
+            '<title>My Dynamic Page</title>',
+            '</head>',
             '<body>',
-            '    <p>This is some body content.</p>',
+            '<p>This is some body content.</p>',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['head', 'title', '/title', '/head'],
-        'content' => ['My Dynamic Page']
+        'expected_elements' => ['head', 'title', '/title', '/head']
     ],
     3 => [
         'question' => 'Add a list inside the body:',
@@ -36,15 +39,15 @@ $questions = [
             '<!DOCTYPE html>',
             '<html>',
             '<body>',
-            '',
-            '',
-            '',
-            '',
+            '<ul>',
+            '<li>Item 1</li>',
+            '<li>Item 2</li>',
+            '<li>Item 3</li>',
+            '</ul>',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['ul', 'li', '/li', '/ul'],
-        'content' => ['Item 1', 'Item 2', 'Item 3']
+        'expected_elements' => ['ul', 'li', '/li', '/ul']
     ],
     4 => [
         'question' => 'Add a heading inside the body:',
@@ -52,13 +55,11 @@ $questions = [
             '<!DOCTYPE html>',
             '<html>',
             '<body>',
-            '',
-            '',
+            '<h1>Welcome to My Page</h1>',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['h1', '/h1'],
-        'content' => ['Welcome to My Page']
+        'expected_elements' => ['h1', '/h1']
     ],
     5 => [
         'question' => 'Add a hyperlink inside the body:',
@@ -66,83 +67,11 @@ $questions = [
             '<!DOCTYPE html>',
             '<html>',
             '<body>',
-            '',
-            '',
+            '<a href="https://example.com">Click here</a>',
             '</body>',
             '</html>'
         ],
-        'expected_elements' => ['a', '/a'],
-        'content' => ['Click here', 'href="https://example.com"']
-    ],
-    6 => [
-        'question' => 'Add an image inside the body:',
-        'initial_code' => [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '',
-            '',
-            '</body>',
-            '</html>'
-        ],
-        'expected_elements' => ['img'],
-        'content' => ['src="image.jpg"', 'alt="Sample Image"']
-    ],
-    7 => [
-        'question' => 'Add a table with rows and columns:',
-        'initial_code' => [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '',
-            '',
-            '</body>',
-            '</html>'
-        ],
-        'expected_elements' => ['table', 'tr', 'td', '/td', '/tr', '/table'],
-        'content' => ['Row 1, Column 1', 'Row 1, Column 2', 'Row 2, Column 1', 'Row 2, Column 2']
-    ],
-    8 => [
-        'question' => 'Add a form with input fields:',
-        'initial_code' => [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '',
-            '',
-            '</body>',
-            '</html>'
-        ],
-        'expected_elements' => ['form', 'input', '/form'],
-        'content' => ['type="text"', 'name="username"', 'type="password"', 'name="password"', 'type="submit"']
-    ],
-    9 => [
-        'question' => 'Add a button inside the body:',
-        'initial_code' => [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '',
-            '',
-            '</body>',
-            '</html>'
-        ],
-        'expected_elements' => ['button', '/button'],
-        'content' => ['Click Me']
-    ],
-    10 => [
-        'question' => 'Add a paragraph with a specific class:',
-        'initial_code' => [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '',
-            '',
-            '</body>',
-            '</html>'
-        ],
-        'expected_elements' => ['p', '/p'],
-        'content' => ['class="text-highlight"', 'This is highlighted text.']
+        'expected_elements' => ['a', '/a']
     ],
 ];
 
@@ -167,8 +96,7 @@ if (!isset($questions[$current_question])) {
     $_SESSION['current_question'] = $current_question;
 }
 
-function renderInitialCode($initial_code, $expected_elements)
-{
+function renderInitialCode($initial_code, $expected_elements) {
     $drop_zone_count = 0;
     foreach ($initial_code as $line) {
         if (trim($line) === '') {
@@ -401,7 +329,9 @@ function renderChoices($expected_elements)
 
         <div id="code" class="tab-content active">
             <div class="code-preview">
-                <?php renderInitialCode($questions[$current_question]['initial_code'], $questions[$current_question]['expected_elements']); ?>
+              <?php renderInitialCode($questions[$current_question]['initial_code'], $questions[$current_question]['expected_elements']); ?>
+
+?>
             </div>
 
             <div class="choices-container">
@@ -488,19 +418,34 @@ function renderChoices($expected_elements)
             }
         }
 
-        function updateOutput() {
-            const dropZones = document.querySelectorAll('.drop-zone');
-            let htmlCode = `<!DOCTYPE html>\n<html>\n`;
+      function updateOutput() {
+    const dropZones = document.querySelectorAll('.drop-zone');
+    let htmlCode = `<!DOCTYPE html>\n<html>\n`;
+    let bodyStarted = false;
+    let bodyContent = ""; // Store content inside the body
 
-            dropZones.forEach(zone => {
-                htmlCode += zone.innerHTML + '\n';
-            });
+    dropZones.forEach(zone => {
+        const tag = zone.innerHTML.trim();
 
-            htmlCode += `</html>`;
+        if (tag.includes("<body>")) bodyStarted = true;
+        if (bodyStarted) bodyContent += tag + "\n"; // Capture all content inside <body>
+        if (tag.includes("</body>")) bodyStarted = false;
 
-            const outputContainer = document.getElementById('resultContent');
-            outputContainer.innerHTML += `<h3>Output:</h3><div class='output-frame'>${htmlCode}</div>`;
-        }
+        htmlCode += tag + "\n";
+    });
+
+    htmlCode += `</html>`;
+
+    // Inject output into result container
+    const outputContainer = document.getElementById('resultContent');
+    outputContainer.innerHTML = `
+        <h3>Output:</h3>
+        <div class='output-frame'><pre>${htmlCode}</pre></div>
+        <h3>Page Preview:</h3>
+        <div class='output-frame'>${bodyContent}</div>
+    `;
+}
+
     </script>
 </body>
 

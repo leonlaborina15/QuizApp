@@ -20,7 +20,7 @@ session_start();
         <h1 class="main_title hidden">Pick Category</h1>
         <div class="action_wrapper">
             <a href="guide.php" class="hidden btn btn-warning fs-5 fw-semibold text-warning-emphasis">Editing</a>
-            <a href="pretest.php?category=coding" class="hidden btn btn-warning fs-5 fw-semibold text-warning-emphasis">Coding</a>
+            <a href="coding_guide.php" class="hidden btn btn-warning fs-5 fw-semibold text-warning-emphasis">Coding</a>
             <a href="index.php" class="hidden btn btn-secondary fs-5 fw-semibold">Back to Home</a>
         </div>
     </div>
