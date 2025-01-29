@@ -100,6 +100,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		toolButton.style.display = "none" // Hide tool button
 		uploadResultButton.style.display = "block" // Display upload result button
 
+		const rotateDegreeInput = document.getElementById("rotate-degree")
+		const rotateButton = document.getElementById("rotate-button")
+
 		if (cropper) cropper.destroy() // Destroy existing cropper instance if any
 		cropper = new Cropper(image, {
 			// Initialize new cropper instance
@@ -114,6 +117,16 @@ document.addEventListener("DOMContentLoaded", function () {
 			cropBoxResizable: true, // Allow resizing the crop box
 			toggleDragModeOnDblclick: false, // Disable toggle drag mode on double click
 		})
+
+		rotateButton.addEventListener("click", () => {
+			const degree = parseInt(rotateDegreeInput.value, 10)
+			if (!isNaN(degree) && cropper) {
+				cropper.rotate(degree)
+			}
+		})
+
+		rotateDegreeInput.style.display = "block"
+		rotateButton.style.display = "block"
 	}
 
 	// Get the cropped result
@@ -127,6 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		resetToolButton.style.display = "block" // Display reset tool button
 		nextToolButton.style.display = "block" // Display next tool button
 		nextToolButton.disabled = false // Enable next tool button
+		document.getElementById("rotate-container").style.display = "none" // Hide rotate container
 	}
 
 	// Reset the tool

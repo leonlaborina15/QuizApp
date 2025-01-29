@@ -70,8 +70,8 @@ session_start();
   <div class="container-md mt-5 p-4 bg-white rounded shadow">
     <div class="d-flex w-100">
       <div id="tool-instructions" class="mb-4">
-        <h2 id="tool-title">Cropping Tool</h2>
-        <p id="tool-description">Removes unwanted areas from image edges.</p>
+        <h2 id="tool-title">Cropping and Rotate Tool</h2>
+        <p id="tool-description">Removes unwanted areas from image edges and allows rotation.</p>
       </div>
 
       <!-- Dropzone for image -->
@@ -104,11 +104,15 @@ session_start();
     </div>
 
     <div class="d-flex justify-content-between">
-      <a id="back-to-home" href="index.php" class="btn btn-secondary fs-5 fw-semibold me-4">Back to Home</a>
-      <button id="tool-button" class="btn btn-secondary fs-5 fw-semibold me-4">Start Cropping</button>
-      <button id="upload-result" class="btn btn-success fs-5 fw-semibold me-4">Get Result</button>
-      <button id="reset-tool" class="btn btn-warning fs-5 fw-semibold me-4" style="display: none;">Crop Another Image</button>
-      <button id="next-tool" class="btn btn-info fs-5 fw-semibold" disabled>Next</button>
+      <a id="back-to-home" href="index.php" class="btn btn-secondary fs-6 fw-semibold me-4">Back to Home</a>
+      <button id="tool-button" class="btn btn-secondary fs-6 fw-semibold me-4">Start Cropping</button>
+      <button id="upload-result" class="btn btn-success fs-6 fw-semibold me-4">Get Result</button>
+      <button id="reset-tool" class="btn btn-warning fs-6 fw-semibold me-4" style="display: none;">Crop Another Image</button>
+      <div id="rotate-container" class="input-group w-25">
+        <button id="rotate-button" class="btn btn-secondary fs-6 fw-semibold" style="display: none;">Rotate</button>
+        <input type="number" id="rotate-degree" class="form-control me-4" placeholder="Enter degree" style="display: none; width: 100px !important;">
+      </div>
+      <button id="next-tool" class="btn btn-info fs-6 fw-semibold" disabled>Next</button>
     </div>
   </div>
 
