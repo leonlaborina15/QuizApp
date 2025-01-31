@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id'])) {
         <h1 class="main_title text-center">Hands-on Experience</h1>
         <p class="text-white text-center w-50">This is a placeholder for Phase 2. You can provide tools and resources based on the incorrect answers in the
             pre-test.</p>
-        <a href="posttest.php?category=editing" class="btn btn-warning fs-5 fw-semibold text-warning-emphasis">Proceed to Post-test</a>
+        <a href="phase2_editing.php" class="btn btn-warning fs-5 fw-semibold text-warning-emphasis">Proceed to Post-test</a>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
